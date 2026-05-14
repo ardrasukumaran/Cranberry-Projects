@@ -4,7 +4,6 @@ import { AppShell } from "@/components/AppShell";
 import { Berry } from "@/components/Berry";
 import { Plus, Pencil } from "lucide-react";
 import { getAttacks, formatAttackDate, type AttackLog } from "@/lib/storage";
-import { useAuth } from "@/context/AuthContext";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -21,7 +20,6 @@ function todayLabel() {
 }
 
 function TodayPage() {
-  const { phone } = useAuth();
   const [attacks, setAttacks] = useState<AttackLog[]>([]);
 
   // Load stored attacks on mount (and after navigating back here)
@@ -29,12 +27,10 @@ function TodayPage() {
     setAttacks(getAttacks());
   }, []);
 
-  const displayName = phone ? phone.replace(/^\+\d{1,3}/, '').trim() || 'there' : 'there';
-
   return (
     <AppShell
       subtitle={todayLabel()}
-      title={<>Hi {displayName}.<br /><span className="text-primary">How's your head today?</span></>}
+      title={<>Hi Natasha.<br /><span className="text-primary">How's your head today?</span></>}
       right={<Berry mood="wave" size={68} className="-mt-2 -mr-1" />}
     >
       {/* BIG plus — log attack */}

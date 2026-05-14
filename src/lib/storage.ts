@@ -1,3 +1,6 @@
+import { sendAttackToWebhook } from './webhook';
+import { getStoredPhone } from './auth';
+
 export interface AttackLog {
   id: string;
   date: string;       // ISO date string e.g. "2025-05-14"
@@ -29,9 +32,12 @@ export function saveAttack(
     id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
     createdAt: Date.now(),
   };
-  // Most recent first
   attacks.unshift(entry);
   localStorage.setItem(ATTACKS_KEY, JSON.stringify(attacks));
+
+  // Forward to webhook (no-op if VITE_WEBHOOK_URL is not set)
+  sendAttackToWebhook(entry, getStoredPhone() ?? 'unknown');
+
   return entry;
 }
 

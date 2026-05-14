@@ -54,6 +54,18 @@ function LogPage() {
   const [date, setDate] = useState<Date>(() => todayDate());
   const [dateOpen, setDateOpen] = useState(false);
   const [status, setStatus] = useState<string>("Just started");
+
+  function isToday(d: Date) {
+    const t = todayDate();
+    return d.getTime() === t.getTime();
+  }
+
+  function handleDateSelect(d: Date) {
+    setDate(d);
+    setDateOpen(false);
+    // Past dates default to Done; today keeps the current status
+    if (!isToday(d)) setStatus("Done");
+  }
   const [intensity, setIntensity] = useState(6);
   const [duration, setDuration] = useState("3–6h");
   const [foods, setFoods] = useState<string[]>([]);
@@ -116,7 +128,7 @@ function LogPage() {
               <Calendar
                 mode="single"
                 selected={date}
-                onSelect={(d) => { if (d) { setDate(d); setDateOpen(false); } }}
+                onSelect={(d) => { if (d) handleDateSelect(d); }}
                 disabled={(d) => d > new Date()}
                 initialFocus
                 className="p-3 pointer-events-auto"
