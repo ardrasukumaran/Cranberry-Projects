@@ -1,0 +1,322 @@
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
+import { AppShell } from "@/components/AppShell";
+import { Berry } from "@/components/Berry";
+import { Check, ArrowLeft, ArrowRight, Sparkles, Calendar as CalendarIcon, MessageCircle } from "lucide-react";
+import { FOOD_SETS } from "@/lib/mock-data";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { format } from "date-fns";
+
+export const Route = createFileRoute("/log")({
+  head: () => ({
+    meta: [
+      { title: "Log an attack — Migraine tracker" },
+      { name: "description", content: "Capture your migraine attack in under a minute." },
+    ],
+  }),
+  component: LogPage,
+});
+
+type Step = 0 | 1 | 2;
+const STEP_LABELS = ["Attack", "Food", "Done"];
+
+const PAIN_VARS: Record<number, string> = {
+  1: "var(--pain-1)",
+  2: "var(--pain-2)",
+  3: "var(--pain-3)",
+  4: "var(--pain-4)",
+  5: "var(--pain-5)",
+  6: "var(--pain-6)",
+  7: "var(--pain-7)",
+  8: "var(--pain-8)",
+  9: "var(--pain-9)",
+  10: "var(--pain-10)",
+};
+
+function painLabel(n: number) {
+  if (n <= 3) return "Mild";
+  if (n <= 6) return "Moderate";
+  if (n <= 8) return "Severe";
+  return "Debilitating";
+}
+
+function todayDate() {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
+function LogPage() {
+  const navigate = useNavigate();
+  const [step, setStep] = useState<Step>(0);
+  const [date, setDate] = useState<Date>(() => todayDate());
+  const [dateOpen, setDateOpen] = useState(false);
+  const [status, setStatus] = useState<string>("Just started");
+  const [intensity, setIntensity] = useState(6);
+  const [duration, setDuration] = useState("3–6h");
+  const [foods, setFoods] = useState<string[]>([]);
+  const [foodSetIdx, setFoodSetIdx] = useState(0);
+
+  const toggle = (arr: string[], v: string, set: (x: string[]) => void) =>
+    set(arr.includes(v) ? arr.filter((x) => x !== v) : [...arr, v]);
+
+  const next = () => {
+    if (step === 1 && foodSetIdx < FOOD_SETS.length - 1) {
+      setFoodSetIdx(foodSetIdx + 1);
+      return;
+    }
+    setStep((Math.min(step + 1, 2)) as Step);
+  };
+  const back = () => {
+    if (step === 1 && foodSetIdx > 0) {
+      setFoodSetIdx(foodSetIdx - 1);
+      return;
+    }
+    if (step === 0) {
+      navigate({ to: "/" });
+      return;
+    }
+    setStep((Math.max(step - 1, 0)) as Step);
+  };
+
+  const progress = step === 2 ? 100 : ((step + (step === 1 ? foodSetIdx / FOOD_SETS.length : 0)) / 2) * 100;
+
+  const painColor = useMemo(() => PAIN_VARS[intensity], [intensity]);
+
+  return (
+    <div className="phone-frame bg-background">
+      <header className="px-5 pt-6 pb-3 flex items-center justify-between">
+        <button onClick={back} className="h-10 w-10 -ml-2 grid place-items-center rounded-full hover:bg-muted">
+          <ArrowLeft className="h-5 w-5" />
+        </button>
+        <p className="text-xs uppercase tracking-[0.18em] text-warm-grey/70 font-semibold">
+          {STEP_LABELS[step]}
+        </p>
+        {step === 0 ? (
+          <Popover open={dateOpen} onOpenChange={setDateOpen}>
+            <PopoverTrigger asChild>
+              <button className="flex items-center gap-1.5 text-xs font-semibold text-primary px-2.5 py-1.5 rounded-full bg-card border border-border">
+                <CalendarIcon className="h-3.5 w-3.5" />
+                {format(date, "EEE, MMM d")}
+              </button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="end">
+              <Calendar
+                mode="single"
+                selected={date}
+                onSelect={(d) => { if (d) { setDate(d); setDateOpen(false); } }}
+                disabled={(d) => d > new Date()}
+                initialFocus
+                className="p-3 pointer-events-auto"
+              />
+            </PopoverContent>
+          </Popover>
+        ) : (
+          <button
+            onClick={() => navigate({ to: "/" })}
+            className="text-xs font-semibold text-warm-grey/70"
+          >
+            Save & exit
+          </button>
+        )}
+      </header>
+      <div className="px-5">
+        <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+          <div
+            className="h-full bg-primary rounded-full transition-all"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+      </div>
+
+      <main className="px-5 mt-6 scroll-area-pad">
+        {step === 0 && (
+          <section>
+            <h2 className="font-serif-display text-[28px] leading-tight">
+              How intense is the pain?
+            </h2>
+            <p className="text-sm text-warm-grey/80 mt-1">
+              Tap a number from 1 to 10.
+            </p>
+
+            <div className="mt-6 rounded-3xl bg-card border border-border p-5 text-center">
+              <p className="font-serif-display text-[64px] leading-none" style={{ color: painColor }}>
+                {intensity}
+              </p>
+              <p className="text-xs uppercase tracking-[0.18em] text-warm-grey/70 mt-1">
+                {painLabel(intensity)}
+              </p>
+              <div className="mt-5 grid grid-cols-5 gap-2">
+                {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => {
+                  const on = intensity === n;
+                  const c = PAIN_VARS[n];
+                  return (
+                    <button
+                      key={n}
+                      onClick={() => setIntensity(n)}
+                      aria-label={`Pain ${n}`}
+                      className="aspect-square rounded-full grid place-items-center font-bold text-[15px] border-2 transition active:scale-95"
+                      style={{
+                        background: on ? c : "transparent",
+                        borderColor: c,
+                        color: on ? "var(--brand-ink)" : c,
+                      }}
+                    >
+                      {n}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <p className="mt-6 text-xs uppercase tracking-[0.18em] text-warm-grey/70 font-semibold">
+              Attack status
+            </p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {["Just started", "Ongoing", "Done"].map((s) => (
+                <button
+                  key={s}
+                  onClick={() => setStatus(s)}
+                  className={`px-4 py-2 rounded-full text-sm font-medium border transition ${
+                    status === s
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "bg-card border-border text-foreground"
+                  }`}
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
+
+            <p className="mt-6 text-xs uppercase tracking-[0.18em] text-warm-grey/70 font-semibold">
+              Duration so far
+            </p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {["3–6h", "6h", ">6h", "24h"].map((d) => (
+                <button
+                  key={d}
+                  onClick={() => setDuration(d)}
+                  className={`px-4 py-2 rounded-full text-sm font-medium border transition ${
+                    duration === d
+                      ? "bg-foreground text-background border-foreground"
+                      : "bg-card border-border text-foreground"
+                  }`}
+                >
+                  {d}
+                </button>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {step === 1 && (
+          <section>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs uppercase tracking-[0.18em] text-warm-grey/70 font-semibold">
+                  Food set {foodSetIdx + 1} of {FOOD_SETS.length}
+                </p>
+                <h2 className="font-serif-display text-[26px] leading-tight mt-1">
+                  {FOOD_SETS[foodSetIdx].label}
+                </h2>
+              </div>
+              <Berry mood="clipboard" size={64} />
+            </div>
+            <p className="text-sm text-warm-grey/80 mt-2">
+              Tap anything you had in the last 24 hours.
+            </p>
+            <div className="mt-5 grid grid-cols-3 gap-2.5">
+              {FOOD_SETS[foodSetIdx].items.map((item) => {
+                const on = foods.includes(item.name);
+                return (
+                  <button
+                    key={item.name}
+                    onClick={() => toggle(foods, item.name, setFoods)}
+                    className={`aspect-square rounded-2xl border-2 grid grid-rows-[1fr_auto] items-center justify-items-center px-1.5 pt-2 pb-2 transition relative overflow-hidden ${
+                      on
+                        ? "bg-mid-lavender/30 border-primary scale-[0.97]"
+                        : "bg-card border-border hover:border-primary/40"
+                    }`}
+                  >
+                    <span
+                      className="text-[44px] leading-none select-none"
+                      style={{ fontFamily: '"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif' }}
+                    >
+                      {item.emoji}
+                    </span>
+                    <span className={`text-[11px] font-semibold leading-tight text-center ${on ? "text-primary" : "text-foreground"}`}>
+                      {item.name}
+                    </span>
+                    {on && (
+                      <span className="absolute top-1.5 right-1.5 h-5 w-5 rounded-full bg-primary text-primary-foreground grid place-items-center">
+                        <Check className="h-3 w-3" />
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+            <div className="mt-4 flex justify-center gap-1.5">
+              {FOOD_SETS.map((_, i) => (
+                <div
+                  key={i}
+                  className={`h-1.5 rounded-full transition-all ${
+                    i === foodSetIdx ? "w-6 bg-primary" : "w-1.5 bg-muted"
+                  }`}
+                />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {step === 2 && (
+          <section className="text-center pt-8">
+            <Berry mood="trophy" size={160} className="mx-auto" />
+            <h2 className="font-serif-display text-[32px] leading-tight mt-4">
+              Logged. Take it easy.
+            </h2>
+            <p className="text-sm text-warm-grey/80 mt-2 max-w-[280px] mx-auto">
+              I'll watch this one carefully — three more like it and we may have a pattern.
+            </p>
+            <div className="mt-6 inline-flex chip">
+              <Sparkles className="h-3.5 w-3.5" /> +25 berries earned
+            </div>
+            <div className="mt-8 grid grid-cols-1 gap-3">
+              <button
+                onClick={() => navigate({ to: "/" })}
+                className="rounded-2xl bg-primary text-primary-foreground py-3 font-semibold text-sm"
+              >
+                Done
+              </button>
+              <a
+                href="https://15557047540.wa.pulse.is/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-2xl bg-card border border-border text-foreground py-3 font-semibold text-sm inline-flex items-center justify-center gap-2"
+              >
+                <MessageCircle className="h-4 w-4" /> Chat with Expert
+              </a>
+            </div>
+          </section>
+        )}
+
+        {step < 2 && (
+          <div className="mt-10">
+            <button
+              onClick={next}
+              className="w-full rounded-full bg-primary text-primary-foreground py-4 font-semibold text-[15px] flex items-center justify-center gap-2 ring-soft"
+            >
+              {step === 1 && foodSetIdx === FOOD_SETS.length - 1 ? "Finish" : "Continue"} <ArrowRight className="h-4 w-4" />
+            </button>
+            {step !== 0 && (
+              <button onClick={() => setStep(2)} className="block w-full text-center mt-3 text-xs text-warm-grey/70 font-medium">
+                Skip this step
+              </button>
+            )}
+          </div>
+        )}
+      </main>
+    </div>
+  );
+}

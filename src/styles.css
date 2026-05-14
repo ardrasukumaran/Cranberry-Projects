@@ -1,0 +1,133 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;700&family=Raleway:wght@300;400;500;600;700&display=swap');
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+
+  --font-serif: "DM Serif Display", Georgia, serif;
+  --font-sans: "Raleway", system-ui, sans-serif;
+  --font-body: "DM Sans", system-ui, sans-serif;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-yellow: var(--brand-yellow);
+  --color-lavender: var(--brand-lavender);
+  --color-magenta: var(--brand-magenta);
+  --color-mid-lavender: var(--brand-mid-lavender);
+  --color-warm-grey: var(--brand-warm-grey);
+  --color-ink: var(--brand-ink);
+  --color-success: var(--brand-success);
+}
+
+:root {
+  --radius: 1rem;
+
+  /* Brand — Cranberry.Fit (Dark mode) */
+  --background: oklch(0.16 0.02 285);             /* deep ink */
+  --foreground: oklch(0.96 0.01 320);              /* near white */
+
+  --card: oklch(0.22 0.03 285);
+  --card-foreground: oklch(0.96 0.01 320);
+
+  --popover: oklch(0.22 0.03 285);
+  --popover-foreground: oklch(0.96 0.01 320);
+
+  --primary: oklch(0.68 0.22 290);                 /* lifted purple */
+  --primary-foreground: oklch(0.12 0.02 285);
+
+  --secondary: oklch(0.28 0.05 320);
+  --secondary-foreground: oklch(0.96 0.01 320);
+
+  --muted: oklch(0.26 0.03 285);
+  --muted-foreground: oklch(0.78 0.02 320);
+
+  --accent: oklch(0.3 0.06 320);
+  --accent-foreground: oklch(0.96 0.01 320);
+
+  --destructive: oklch(0.62 0.22 27);
+  --destructive-foreground: oklch(1 0 0);
+
+  --border: oklch(0.3 0.03 285);
+  --input: oklch(0.3 0.03 285);
+  --ring: oklch(0.68 0.22 290);
+
+  --brand-yellow: oklch(0.88 0.18 100);
+  --brand-lavender: oklch(0.32 0.05 305);
+  --brand-magenta: oklch(0.4 0.1 350);
+  --brand-mid-lavender: oklch(0.55 0.16 305);
+  --brand-warm-grey: oklch(0.78 0.02 320);
+  --brand-ink: oklch(0.1 0.02 280);
+  --brand-success: oklch(0.7 0.16 165);
+
+  /* Pain scale: green → yellow → orange → red */
+  --pain-1: oklch(0.72 0.18 145);
+  --pain-2: oklch(0.78 0.18 135);
+  --pain-3: oklch(0.82 0.18 120);
+  --pain-4: oklch(0.86 0.18 105);
+  --pain-5: oklch(0.88 0.18 90);
+  --pain-6: oklch(0.82 0.18 75);
+  --pain-7: oklch(0.76 0.2 55);
+  --pain-8: oklch(0.7 0.22 40);
+  --pain-9: oklch(0.64 0.24 28);
+  --pain-10: oklch(0.58 0.25 20);
+}
+
+@layer base {
+  * { border-color: var(--color-border); }
+  html, body { font-family: var(--font-body); }
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, h4 { font-family: var(--font-sans); letter-spacing: -0.01em; }
+  .font-serif-display { font-family: var(--font-serif); letter-spacing: -0.02em; }
+}
+
+@layer utilities {
+  .phone-frame {
+    width: 100%;
+    max-width: 430px;
+    margin: 0 auto;
+    min-height: 100dvh;
+    background: var(--color-background);
+    position: relative;
+  }
+  .scroll-area-pad { padding-bottom: 96px; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 12px; border-radius: 999px;
+    font-size: 12px; font-weight: 500;
+    background: color-mix(in oklab, var(--color-primary) 8%, white);
+    color: var(--color-primary);
+  }
+  .ring-soft { box-shadow: 0 1px 0 rgba(74,65,69,0.04), 0 8px 24px -12px rgba(113,66,215,0.18); }
+}
