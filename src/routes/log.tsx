@@ -256,7 +256,7 @@ function LogPage() {
                   <button
                     key={item.name}
                     onClick={() => toggle(foods, item.name, setFoods)}
-                    className={`aspect-square rounded-2xl border-2 grid grid-rows-[1fr_auto] items-center justify-items-center px-1.5 pt-2 pb-2 transition relative overflow-hidden ${
+                    className={`min-h-[100px] rounded-2xl border-2 grid grid-rows-[1fr_auto] items-center justify-items-center px-1.5 pt-2 pb-2 transition relative ${
                       on
                         ? "bg-mid-lavender/30 border-primary scale-[0.97]"
                         : "bg-card border-border hover:border-primary/40"
