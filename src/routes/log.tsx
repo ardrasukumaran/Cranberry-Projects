@@ -239,12 +239,11 @@ function LogPage() {
                         : "bg-card border-border hover:border-primary/40"
                     }`}
                   >
-                    <span
-                      className="text-[44px] leading-none select-none"
-                      style={{ fontFamily: '"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif' }}
-                    >
-                      {item.emoji}
-                    </span>
+                    <img
+                      src={item.icon}
+                      alt={item.name}
+                      className="w-11 h-11 object-contain select-none"
+                    />
                     <span className={`text-[11px] font-semibold leading-tight text-center ${on ? "text-primary" : "text-foreground"}`}>
                       {item.name}
                     </span>
@@ -290,7 +289,7 @@ function LogPage() {
                 Done
               </button>
               <a
-                href="https://15557047540.wa.pulse.is/"
+                href="https://wa.me/15557047540?"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="rounded-2xl bg-card border border-border text-foreground py-3 font-semibold text-sm inline-flex items-center justify-center gap-2"
