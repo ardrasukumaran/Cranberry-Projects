@@ -239,12 +239,11 @@ function LogPage() {
                         : "bg-card border-border hover:border-primary/40"
                     }`}
                   >
-                    <span
-                      className="text-[44px] leading-none select-none"
-                      style={{ fontFamily: '"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif' }}
-                    >
-                      {item.emoji}
-                    </span>
+                    <img
+                      src={item.icon}
+                      alt={item.name}
+                      className="w-11 h-11 object-contain select-none"
+                    />
                     <span className={`text-[11px] font-semibold leading-tight text-center ${on ? "text-primary" : "text-foreground"}`}>
                       {item.name}
                     </span>
