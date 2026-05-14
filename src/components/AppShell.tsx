@@ -33,14 +33,14 @@ export function AppShell({
 
   return (
     <div className={`phone-frame ${bgClass}`}>
-      {/* Logout button — fixed top-right corner of the phone frame */}
+      {/* Logout button — labeled pill in top-right corner */}
       <button
         onClick={handleLogout}
         aria-label="Log out"
-        title="Log out"
-        className="absolute top-4 right-4 z-50 h-8 w-8 rounded-full flex items-center justify-center text-warm-grey/50 hover:text-foreground hover:bg-muted transition"
+        className="absolute top-3 right-4 z-50 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-semibold bg-muted text-warm-grey/70 hover:bg-accent hover:text-foreground transition active:scale-95"
       >
-        <LogOut className="h-4 w-4" />
+        <LogOut className="h-3.5 w-3.5" />
+        Log out
       </button>
 
       {(title || right) && (

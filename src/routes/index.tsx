@@ -1,8 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { Berry } from "@/components/Berry";
 import { Plus, Pencil } from "lucide-react";
-import { RECENT_ATTACKS } from "@/lib/mock-data";
+import { getAttacks, formatAttackDate, type AttackLog } from "@/lib/storage";
+import { useAuth } from "@/context/AuthContext";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -14,11 +16,25 @@ export const Route = createFileRoute("/")({
   component: TodayPage,
 });
 
+function todayLabel() {
+  return new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+}
+
 function TodayPage() {
+  const { phone } = useAuth();
+  const [attacks, setAttacks] = useState<AttackLog[]>([]);
+
+  // Load stored attacks on mount (and after navigating back here)
+  useEffect(() => {
+    setAttacks(getAttacks());
+  }, []);
+
+  const displayName = phone ? phone.replace(/^\+\d{1,3}/, '').trim() || 'there' : 'there';
+
   return (
     <AppShell
-      subtitle="Thursday, May 14"
-      title={<>Hi Natasha.<br /><span className="text-primary">How's your head today?</span></>}
+      subtitle={todayLabel()}
+      title={<>Hi {displayName}.<br /><span className="text-primary">How's your head today?</span></>}
       right={<Berry mood="wave" size={68} className="-mt-2 -mr-1" />}
     >
       {/* BIG plus — log attack */}
@@ -48,30 +64,44 @@ function TodayPage() {
           <p className="text-xs uppercase tracking-[0.18em] text-warm-grey/70 font-semibold">Recent attacks</p>
           <Link to="/calendar" className="text-xs font-semibold text-primary">See all</Link>
         </div>
-        <div className="space-y-2">
-          {RECENT_ATTACKS.slice(0, 3).map((a) => (
-            <div key={a.date} className="rounded-2xl bg-card border border-border p-4 flex items-center justify-between gap-3">
-              <div className="min-w-0">
-                <p className="text-[13px] font-semibold">{a.date}</p>
-                <p className="text-[11px] text-warm-grey/80 truncate">{a.duration} · {a.triggers.join(", ")}</p>
-              </div>
-              <div className="flex items-center gap-2 shrink-0">
-                <div className={`h-9 w-9 rounded-full grid place-items-center text-sm font-bold ${
-                  a.intensity >= 7 ? "bg-primary text-primary-foreground" : "bg-mid-lavender/50 text-primary-foreground"
-                }`}>
-                  {a.intensity}
+
+        {attacks.length === 0 ? (
+          <div className="rounded-2xl bg-card border border-border p-6 text-center">
+            <Berry mood="tired" size={56} className="mx-auto mb-3" />
+            <p className="text-sm font-semibold text-foreground">No attacks logged yet</p>
+            <p className="text-xs text-warm-grey/70 mt-1">
+              Tap the button above to log your first one.
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {attacks.slice(0, 3).map((a) => (
+              <div key={a.id} className="rounded-2xl bg-card border border-border p-4 flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-[13px] font-semibold">{formatAttackDate(a.date)}</p>
+                  <p className="text-[11px] text-warm-grey/80 truncate">
+                    {a.duration}
+                    {a.foods.length > 0 && ` · ${a.foods.slice(0, 2).join(', ')}${a.foods.length > 2 ? '…' : ''}`}
+                  </p>
                 </div>
-                <Link
-                  to="/log"
-                  aria-label={`Edit attack on ${a.date}`}
-                  className="h-9 w-9 rounded-full grid place-items-center bg-muted text-foreground hover:bg-accent transition"
-                >
-                  <Pencil className="h-4 w-4" />
-                </Link>
+                <div className="flex items-center gap-2 shrink-0">
+                  <div className={`h-9 w-9 rounded-full grid place-items-center text-sm font-bold ${
+                    a.intensity >= 7 ? "bg-primary text-primary-foreground" : "bg-mid-lavender/50 text-primary-foreground"
+                  }`}>
+                    {a.intensity}
+                  </div>
+                  <Link
+                    to="/log"
+                    aria-label={`Log new attack`}
+                    className="h-9 w-9 rounded-full grid place-items-center bg-muted text-foreground hover:bg-accent transition"
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Link>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </section>
     </AppShell>
   );

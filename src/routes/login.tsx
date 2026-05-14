@@ -115,7 +115,7 @@ function LoginPage() {
       <div className="relative flex flex-col items-center justify-center flex-1 px-6 py-12">
         {/* Berry + wordmark */}
         <div className="flex flex-col items-center gap-3 mb-10">
-          <Berry mood="calm" size={80} />
+          <Berry mood="wave" size={80} />
           <div className="text-center">
             <p className="text-xs uppercase tracking-[0.22em] text-warm-grey/50 font-medium mb-1">
               Migraine tracker
