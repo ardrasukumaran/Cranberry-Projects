@@ -290,7 +290,7 @@ function LogPage() {
                 Done
               </button>
               <a
-                href="https://15557047540.wa.pulse.is/"
+                href="https://wa.me/15557047540?"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="rounded-2xl bg-card border border-border text-foreground py-3 font-semibold text-sm inline-flex items-center justify-center gap-2"
