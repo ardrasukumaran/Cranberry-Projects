@@ -241,7 +241,7 @@ function LogPage() {
                   Food set {foodSetIdx + 1} of {FOOD_SETS.length}
                 </p>
                 <h2 className="font-serif-display text-[26px] leading-tight mt-1">
-                  {FOOD_SETS[foodSetIdx].label}
+                  Understanding food triggers
                 </h2>
               </div>
               <Berry mood="clipboard" size={64} />
