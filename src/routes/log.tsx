@@ -256,7 +256,7 @@ function LogPage() {
                   <button
                     key={item.name}
                     onClick={() => toggle(foods, item.name, setFoods)}
-                    className={`min-h-[100px] rounded-2xl border-2 grid grid-rows-[1fr_auto] items-center justify-items-center px-1.5 pt-2 pb-2 transition relative ${
+                    className={`aspect-square rounded-2xl border-2 grid grid-rows-[1fr_auto] items-center justify-items-center px-1.5 pt-2 pb-2 transition relative overflow-hidden ${
                       on
                         ? "bg-mid-lavender/30 border-primary scale-[0.97]"
                         : "bg-card border-border hover:border-primary/40"
@@ -265,9 +265,9 @@ function LogPage() {
                     <img
                       src={item.icon}
                       alt={item.name}
-                      className="w-11 h-11 object-contain select-none"
+                      className="w-8 h-8 object-contain select-none"
                     />
-                    <span className={`text-[11px] font-semibold leading-tight text-center ${on ? "text-primary" : "text-foreground"}`}>
+                    <span className={`text-[9px] font-semibold leading-tight text-center break-words w-full ${on ? "text-primary" : "text-foreground"}`}>
                       {item.name}
                     </span>
                     {on && (
