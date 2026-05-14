@@ -6,7 +6,11 @@ import {
   useRouter,
   HeadContent,
   Scripts,
+  useLocation,
+  useNavigate,
 } from "@tanstack/react-router";
+import { useEffect } from "react";
+import { AuthProvider, useAuth } from "@/context/AuthContext";
 
 import appCss from "../styles.css?url";
 
@@ -108,12 +112,45 @@ function RootShell({ children }: { children: React.ReactNode }) {
   );
 }
 
+function AuthGuard({ children }: { children: React.ReactNode }) {
+  const { phone, isLoading } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const isLoginPage = location.pathname === '/login';
+
+  useEffect(() => {
+    if (isLoading) return;
+    if (!phone && !isLoginPage) {
+      navigate({ to: '/login' });
+    }
+  }, [isLoading, phone, isLoginPage, navigate]);
+
+  // While resolving auth from localStorage, show a blank screen (avoids flash)
+  if (isLoading) {
+    return (
+      <div className="phone-frame bg-background flex items-center justify-center min-h-screen">
+        <div className="h-8 w-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+      </div>
+    );
+  }
+
+  // Unauthenticated and not yet navigated — render nothing to avoid flash
+  if (!phone && !isLoginPage) return null;
+
+  return <>{children}</>;
+}
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Outlet />
+      <AuthProvider>
+        <AuthGuard>
+          <Outlet />
+        </AuthGuard>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }

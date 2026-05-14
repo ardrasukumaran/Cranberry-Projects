@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
+import { saveAttack } from "@/lib/storage";
 import { AppShell } from "@/components/AppShell";
 import { Berry } from "@/components/Berry";
 import { Check, ArrowLeft, ArrowRight, Sparkles, Calendar as CalendarIcon, MessageCircle } from "lucide-react";
@@ -53,6 +54,18 @@ function LogPage() {
   const [date, setDate] = useState<Date>(() => todayDate());
   const [dateOpen, setDateOpen] = useState(false);
   const [status, setStatus] = useState<string>("Just started");
+
+  function isToday(d: Date) {
+    const t = todayDate();
+    return d.getTime() === t.getTime();
+  }
+
+  function handleDateSelect(d: Date) {
+    setDate(d);
+    setDateOpen(false);
+    // Past dates default to Done; today keeps the current status
+    if (!isToday(d)) setStatus("Done");
+  }
   const [intensity, setIntensity] = useState(6);
   const [duration, setDuration] = useState("3–6h");
   const [foods, setFoods] = useState<string[]>([]);
@@ -65,6 +78,16 @@ function LogPage() {
     if (step === 1 && foodSetIdx < FOOD_SETS.length - 1) {
       setFoodSetIdx(foodSetIdx + 1);
       return;
+    }
+    // Persist when completing the last food step → done screen
+    if (step === 1) {
+      saveAttack({
+        date: format(date, 'yyyy-MM-dd'),
+        intensity,
+        status,
+        duration,
+        foods,
+      });
     }
     setStep((Math.min(step + 1, 2)) as Step);
   };
@@ -105,7 +128,7 @@ function LogPage() {
               <Calendar
                 mode="single"
                 selected={date}
-                onSelect={(d) => { if (d) { setDate(d); setDateOpen(false); } }}
+                onSelect={(d) => { if (d) handleDateSelect(d); }}
                 disabled={(d) => d > new Date()}
                 initialFocus
                 className="p-3 pointer-events-auto"
@@ -218,7 +241,7 @@ function LogPage() {
                   Food set {foodSetIdx + 1} of {FOOD_SETS.length}
                 </p>
                 <h2 className="font-serif-display text-[26px] leading-tight mt-1">
-                  {FOOD_SETS[foodSetIdx].label}
+                  Understanding food triggers
                 </h2>
               </div>
               <Berry mood="clipboard" size={64} />
@@ -309,7 +332,19 @@ function LogPage() {
               {step === 1 && foodSetIdx === FOOD_SETS.length - 1 ? "Finish" : "Continue"} <ArrowRight className="h-4 w-4" />
             </button>
             {step !== 0 && (
-              <button onClick={() => setStep(2)} className="block w-full text-center mt-3 text-xs text-warm-grey/70 font-medium">
+              <button
+                onClick={() => {
+                  saveAttack({
+                    date: format(date, 'yyyy-MM-dd'),
+                    intensity,
+                    status,
+                    duration,
+                    foods,
+                  });
+                  setStep(2);
+                }}
+                className="block w-full text-center mt-3 text-xs text-warm-grey/70 font-medium"
+              >
                 Skip this step
               </button>
             )}
