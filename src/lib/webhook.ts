@@ -11,6 +11,7 @@ export interface WebhookPayload {
   status: string;
   duration: string;
   foods: string;      // comma-separated, easier to read in a spreadsheet
+  others: string;
   loggedAt: string;   // ISO timestamp
 }
 
@@ -22,6 +23,7 @@ export function sendAttackToWebhook(attack: AttackLog, phone: string): void {
     status: attack.status,
     duration: attack.duration,
     foods: attack.foods.join(', '),
+    others: attack.others ?? '',
     loggedAt: new Date(attack.createdAt).toISOString(),
   };
 
