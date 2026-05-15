@@ -200,7 +200,10 @@ function LogPage() {
               {["Just started", "Ongoing", "Done"].map((s) => (
                 <button
                   key={s}
-                  onClick={() => setStatus(s)}
+                  onClick={() => {
+                    setStatus(s);
+                    if (s === "Just started") setDate(todayDate());
+                  }}
                   className={`px-4 py-2 rounded-full text-sm font-medium border transition ${
                     status === s
                       ? "bg-primary text-primary-foreground border-primary"
@@ -212,16 +215,19 @@ function LogPage() {
               ))}
             </div>
 
-            <p className="mt-6 text-xs uppercase tracking-[0.18em] text-warm-grey/70 font-semibold">
+            <p className={`mt-6 text-xs uppercase tracking-[0.18em] font-semibold ${status === "Just started" ? "text-warm-grey/30" : "text-warm-grey/70"}`}>
               Duration so far
             </p>
             <div className="mt-2 flex flex-wrap gap-2">
               {["3–6h", "6h", ">6h", "24h"].map((d) => (
                 <button
                   key={d}
+                  disabled={status === "Just started"}
                   onClick={() => setDuration(d)}
                   className={`px-4 py-2 rounded-full text-sm font-medium border transition ${
-                    duration === d
+                    status === "Just started"
+                      ? "bg-card border-border text-foreground/30 cursor-not-allowed"
+                      : duration === d
                       ? "bg-foreground text-background border-foreground"
                       : "bg-card border-border text-foreground"
                   }`}
