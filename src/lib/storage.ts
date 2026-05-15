@@ -8,6 +8,7 @@ export interface AttackLog {
   status: string;     // "Just started" | "Ongoing" | "Done"
   duration: string;   // "3–6h" | "6h" | ">6h" | "24h"
   foods: string[];    // selected food names
+  others?: string;   // free-text notes
   createdAt: number;  // timestamp for sorting
 }
 

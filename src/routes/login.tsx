@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { Berry } from '@/components/Berry';
-import { Phone, ArrowLeft } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 
 export const Route = createFileRoute('/login')({
   head: () => ({
@@ -12,58 +12,58 @@ export const Route = createFileRoute('/login')({
 });
 
 const COUNTRY_CODES = [
-  { code: '+1',   label: '+1  🇺🇸 United States' },
-  { code: '+1',   label: '+1  🇨🇦 Canada' },
-  { code: '+44',  label: '+44 🇬🇧 United Kingdom' },
-  { code: '+91',  label: '+91 🇮🇳 India' },
-  { code: '+61',  label: '+61 🇦🇺 Australia' },
-  { code: '+64',  label: '+64 🇳🇿 New Zealand' },
-  { code: '+49',  label: '+49 🇩🇪 Germany' },
-  { code: '+33',  label: '+33 🇫🇷 France' },
-  { code: '+39',  label: '+39 🇮🇹 Italy' },
-  { code: '+34',  label: '+34 🇪🇸 Spain' },
-  { code: '+31',  label: '+31 🇳🇱 Netherlands' },
-  { code: '+46',  label: '+46 🇸🇪 Sweden' },
-  { code: '+47',  label: '+47 🇳🇴 Norway' },
-  { code: '+45',  label: '+45 🇩🇰 Denmark' },
-  { code: '+358', label: '+358 🇫🇮 Finland' },
-  { code: '+41',  label: '+41 🇨🇭 Switzerland' },
-  { code: '+43',  label: '+43 🇦🇹 Austria' },
-  { code: '+32',  label: '+32 🇧🇪 Belgium' },
-  { code: '+351', label: '+351 🇵🇹 Portugal' },
-  { code: '+30',  label: '+30 🇬🇷 Greece' },
-  { code: '+48',  label: '+48 🇵🇱 Poland' },
-  { code: '+7',   label: '+7  🇷🇺 Russia' },
-  { code: '+380', label: '+380 🇺🇦 Ukraine' },
-  { code: '+55',  label: '+55 🇧🇷 Brazil' },
-  { code: '+52',  label: '+52 🇲🇽 Mexico' },
-  { code: '+54',  label: '+54 🇦🇷 Argentina' },
-  { code: '+56',  label: '+56 🇨🇱 Chile' },
-  { code: '+57',  label: '+57 🇨🇴 Colombia' },
-  { code: '+51',  label: '+51 🇵🇪 Peru' },
-  { code: '+58',  label: '+58 🇻🇪 Venezuela' },
-  { code: '+81',  label: '+81 🇯🇵 Japan' },
-  { code: '+82',  label: '+82 🇰🇷 South Korea' },
-  { code: '+86',  label: '+86 🇨🇳 China' },
-  { code: '+65',  label: '+65 🇸🇬 Singapore' },
-  { code: '+60',  label: '+60 🇲🇾 Malaysia' },
-  { code: '+63',  label: '+63 🇵🇭 Philippines' },
-  { code: '+66',  label: '+66 🇹🇭 Thailand' },
-  { code: '+84',  label: '+84 🇻🇳 Vietnam' },
-  { code: '+62',  label: '+62 🇮🇩 Indonesia' },
-  { code: '+880', label: '+880 🇧🇩 Bangladesh' },
-  { code: '+92',  label: '+92 🇵🇰 Pakistan' },
-  { code: '+94',  label: '+94 🇱🇰 Sri Lanka' },
-  { code: '+971', label: '+971 🇦🇪 UAE' },
-  { code: '+966', label: '+966 🇸🇦 Saudi Arabia' },
-  { code: '+972', label: '+972 🇮🇱 Israel' },
-  { code: '+90',  label: '+90 🇹🇷 Turkey' },
-  { code: '+20',  label: '+20 🇪🇬 Egypt' },
-  { code: '+234', label: '+234 🇳🇬 Nigeria' },
-  { code: '+27',  label: '+27 🇿🇦 South Africa' },
-  { code: '+254', label: '+254 🇰🇪 Kenya' },
-  { code: '+233', label: '+233 🇬🇭 Ghana' },
-  { code: '+212', label: '+212 🇲🇦 Morocco' },
+  { code: '+1',   label: '+1' },
+  { code: '+1',   label: '+1' },
+  { code: '+44',  label: '+44' },
+  { code: '+91',  label: '+91' },
+  { code: '+61',  label: '+61' },
+  { code: '+64',  label: '+64' },
+  { code: '+49',  label: '+49' },
+  { code: '+33',  label: '+33' },
+  { code: '+39',  label: '+39' },
+  { code: '+34',  label: '+34' },
+  { code: '+31',  label: '+31' },
+  { code: '+46',  label: '+46' },
+  { code: '+47',  label: '+47' },
+  { code: '+45',  label: '+45' },
+  { code: '+358', label: '+358' },
+  { code: '+41',  label: '+41' },
+  { code: '+43',  label: '+43' },
+  { code: '+32',  label: '+32' },
+  { code: '+351', label: '+351' },
+  { code: '+30',  label: '+30' },
+  { code: '+48',  label: '+48' },
+  { code: '+7',   label: '+7' },
+  { code: '+380', label: '+380' },
+  { code: '+55',  label: '+55' },
+  { code: '+52',  label: '+52' },
+  { code: '+54',  label: '+54' },
+  { code: '+56',  label: '+56' },
+  { code: '+57',  label: '+57' },
+  { code: '+51',  label: '+51' },
+  { code: '+58',  label: '+58' },
+  { code: '+81',  label: '+81' },
+  { code: '+82',  label: '+82' },
+  { code: '+86',  label: '+86' },
+  { code: '+65',  label: '+65' },
+  { code: '+60',  label: '+60' },
+  { code: '+63',  label: '+63' },
+  { code: '+66',  label: '+66' },
+  { code: '+84',  label: '+84' },
+  { code: '+62',  label: '+62' },
+  { code: '+880', label: '+880' },
+  { code: '+92',  label: '+92' },
+  { code: '+94',  label: '+94' },
+  { code: '+971', label: '+971' },
+  { code: '+966', label: '+966' },
+  { code: '+972', label: '+972' },
+  { code: '+90',  label: '+90' },
+  { code: '+20',  label: '+20' },
+  { code: '+234', label: '+234' },
+  { code: '+27',  label: '+27' },
+  { code: '+254', label: '+254' },
+  { code: '+233', label: '+233' },
+  { code: '+212', label: '+212' },
 ];
 
 // Hardcoded valid Order IDs — key: full phone (countryCode+digits), value: order id
@@ -142,7 +142,7 @@ function LoginPage() {
               Migraine tracker
             </p>
             <h1 className="font-serif-display text-[28px] leading-tight text-foreground">
-              {step === 'phone' ? 'Welcome back.' : 'Verify your identity.'}
+              {step === 'phone' ? 'Welcome.' : 'Verify your identity.'}
             </h1>
             <p className="mt-1 text-sm text-warm-grey/70">
               {step === 'phone'
@@ -161,15 +161,10 @@ function LoginPage() {
               </label>
               <div className="flex gap-2">
                 <div className="relative shrink-0">
-                  <Phone
-                    className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-warm-grey/50 pointer-events-none"
-                    aria-hidden
-                  />
                   <select
                     value={countryCode}
                     onChange={(e) => setCountryCode(e.target.value)}
-                    className="appearance-none h-12 pl-9 pr-3 rounded-xl bg-card border border-border text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-[#7B6BA8] focus:border-[#7B6BA8] transition cursor-pointer"
-                    style={{ minWidth: '96px' }}
+                    className="appearance-none h-12 px-2 rounded-xl bg-card border border-border text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-[#7B6BA8] focus:border-[#7B6BA8] transition cursor-pointer w-[72px]"
                   >
                     {COUNTRY_CODES.map((c, i) => (
                       <option key={`${c.code}-${i}`} value={c.code}>
