@@ -54,19 +54,33 @@ function LogPage() {
   const [date, setDate] = useState<Date>(() => todayDate());
   const [dateOpen, setDateOpen] = useState(false);
   const [status, setStatus] = useState<string>("Just started");
+  const [others, setOthers] = useState("");
 
   function isToday(d: Date) {
     const t = todayDate();
     return d.getTime() === t.getTime();
   }
 
+  function isYesterday(d: Date) {
+    const y = todayDate();
+    y.setDate(y.getDate() - 1);
+    return d.getTime() === y.getTime();
+  }
+
+  function isOlderThanYesterday(d: Date) {
+    const y = todayDate();
+    y.setDate(y.getDate() - 1);
+    return d.getTime() < y.getTime();
+  }
+
   function handleDateSelect(d: Date) {
     setDate(d);
     setDateOpen(false);
-    // Past dates default to Done; today keeps the current status
-    if (!isToday(d)) setStatus("Done");
+    if (isYesterday(d) && status === "Just started") setStatus("Ongoing");
+    else if (isOlderThanYesterday(d)) setStatus("Done");
   }
-  const [intensity, setIntensity] = useState(6);
+
+  const [intensity, setIntensity] = useState(0);
   const [duration, setDuration] = useState("3–6h");
   const [foods, setFoods] = useState<string[]>([]);
   const [foodSetIdx, setFoodSetIdx] = useState(0);
@@ -87,6 +101,7 @@ function LogPage() {
         status,
         duration,
         foods,
+        others,
       });
     }
     setStep((Math.min(step + 1, 2)) as Step);
@@ -105,7 +120,7 @@ function LogPage() {
 
   const progress = step === 2 ? 100 : ((step + (step === 1 ? foodSetIdx / FOOD_SETS.length : 0)) / 2) * 100;
 
-  const painColor = useMemo(() => PAIN_VARS[intensity], [intensity]);
+  const painColor = useMemo(() => PAIN_VARS[intensity] ?? "var(--muted-foreground)", [intensity]);
 
   return (
     <div className="phone-frame bg-background">
@@ -119,7 +134,7 @@ function LogPage() {
         {step === 0 ? (
           <Popover open={dateOpen} onOpenChange={setDateOpen}>
             <PopoverTrigger asChild>
-              <button className="flex items-center gap-1.5 text-xs font-semibold text-primary px-2.5 py-1.5 rounded-full bg-card border border-border">
+              <button className="flex items-center gap-1.5 text-xs font-semibold text-primary-foreground px-2.5 py-1.5 rounded-full bg-primary">
                 <CalendarIcon className="h-3.5 w-3.5" />
                 {format(date, "EEE, MMM d")}
               </button>
@@ -165,10 +180,10 @@ function LogPage() {
 
             <div className="mt-6 rounded-3xl bg-card border border-border p-5 text-center">
               <p className="font-serif-display text-[64px] leading-none" style={{ color: painColor }}>
-                {intensity}
+                {intensity === 0 ? "–" : intensity}
               </p>
               <p className="text-xs uppercase tracking-[0.18em] text-warm-grey/70 mt-1">
-                {painLabel(intensity)}
+                {intensity === 0 ? "Tap to select" : painLabel(intensity)}
               </p>
               <div className="mt-5 grid grid-cols-5 gap-2">
                 {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => {
@@ -197,22 +212,30 @@ function LogPage() {
               Attack status
             </p>
             <div className="mt-2 flex flex-wrap gap-2">
-              {["Just started", "Ongoing", "Done"].map((s) => (
-                <button
-                  key={s}
-                  onClick={() => {
-                    setStatus(s);
-                    if (s === "Just started") setDate(todayDate());
-                  }}
-                  className={`px-4 py-2 rounded-full text-sm font-medium border transition ${
-                    status === s
-                      ? "bg-primary text-primary-foreground border-primary"
-                      : "bg-card border-border text-foreground"
-                  }`}
-                >
-                  {s}
-                </button>
-              ))}
+              {["Just started", "Ongoing", "Done"].map((s) => {
+                const disabled =
+                  (s === "Just started" && !isToday(date)) ||
+                  (s === "Ongoing" && isOlderThanYesterday(date));
+                return (
+                  <button
+                    key={s}
+                    disabled={disabled}
+                    onClick={() => {
+                      setStatus(s);
+                      if (s === "Just started") setDate(todayDate());
+                    }}
+                    className={`px-4 py-2 rounded-full text-sm font-medium border transition ${
+                      disabled
+                        ? "bg-card border-border text-foreground/30 cursor-not-allowed"
+                        : status === s
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-card border-border text-foreground"
+                    }`}
+                  >
+                    {s}
+                  </button>
+                );
+              })}
             </div>
 
             <p className={`mt-6 text-xs uppercase tracking-[0.18em] font-semibold ${status === "Just started" ? "text-warm-grey/30" : "text-warm-grey/70"}`}>
@@ -295,6 +318,21 @@ function LogPage() {
                 />
               ))}
             </div>
+
+            {foodSetIdx === FOOD_SETS.length - 1 && (
+              <div className="mt-5">
+                <p className="text-xs uppercase tracking-[0.18em] text-warm-grey/70 font-semibold mb-2">
+                  Others
+                </p>
+                <textarea
+                  value={others}
+                  onChange={(e) => setOthers(e.target.value)}
+                  placeholder="Any other triggers, symptoms, or notes..."
+                  rows={3}
+                  className="w-full rounded-2xl bg-card border border-border text-foreground text-sm px-4 py-3 placeholder:text-warm-grey/40 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition resize-none"
+                />
+              </div>
+            )}
           </section>
         )}
 
@@ -346,6 +384,7 @@ function LogPage() {
                     status,
                     duration,
                     foods,
+                    others,
                   });
                   setStep(2);
                 }}
